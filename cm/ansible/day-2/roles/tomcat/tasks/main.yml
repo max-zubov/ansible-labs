@@ -1,0 +1,44 @@
+---
+# tasks file for tomcat
+- name: Add Tomcat Group
+  group:
+    name: "{{ tomcat_group }}"
+    state: present
+  become: yes
+
+- name: Add Tomcat User
+  user:
+    name: "{{ tomcat_user }}"
+    group: "{{ tomcat_group }}"
+  become: yes
+  
+- name: Create Tomcat Home Folder
+  file:
+    path: "{{ tomcat_home }}"
+    owner: "{{ tomcat_user }}"
+    group: "{{ tomcat_group }}"
+    state: directory
+    mode: 0755
+  become: yes
+
+- name: Unarchive Tomcat from remote source
+  unarchive:
+    src: "{{ tomcat_url }}"
+    dest: "{{ tomcat_home }}"
+    owner: "{{ tomcat_user }}"
+    group: "{{ tomcat_group }}"
+    remote_src: yes
+  become: yes
+
+- name: Deploy Systemd File
+  template:
+    src: tomcat.service.j2
+    dest: /usr/lib/systemd/system/tomcat.service
+  notify:
+    - systemd daemon reload
+  become: yes
+  
+- name: start and enable tomcat
+  service: name=tomcat state=started enabled=yes
+  become: yes
+  

@@ -1,0 +1,22 @@
+---
+# tasks file for nginx_test
+- name: Nginx Version
+  shell: nginx -v 2>&1
+  register: nginx_version_installed
+- debug: 
+    var: nginx_version_installed.stdout
+
+- name: Check if Nginx Process Running
+  shell: ps -ef | grep -v grep | grep "nginx. master process"
+  args:
+    warn: false
+
+- name: Check if Nginx Responds 200
+  shell: curl -sL -w "%{http_code}" localhost -o /dev/null | grep 200
+  args:
+    warn: false
+
+- name: Check if it's really Nginx
+  shell: curl -sIL localhost | grep "^Server. nginx"
+  args:
+    warn: false

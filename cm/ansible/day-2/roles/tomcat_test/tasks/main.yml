@@ -1,0 +1,19 @@
+---
+# tasks file for tomcat_test
+- name: Check if Tomcat Process Running
+  shell: ps -eo cmd | grep -v grep | grep "tomcat"
+  args:
+    warn: false
+
+- name: Check if Tomcat Responds 200
+  shell: curl -sL -w "%{http_code}" localhost:8080 -o /dev/null | grep 200
+  args:
+    warn: false
+
+- name: Check if It's really Tomcat and show version
+  shell: curl -s localhost:8080 | grep '<title>Apache Tomcat'
+  args:
+    warn: false
+  register: running_tomcat_version
+- debug:
+    var: running_tomcat_version.stdout

@@ -1,0 +1,23 @@
+- name: Installation application stack
+  hosts: site
+  vars:
+    java_version: 11
+# если будет раскоментирована следующая строка, все равно tomcat будет 8.5.6
+    tomcat_version: 9.0.37
+      
+  roles:
+# так java_version, сразу на два таска не переопределяется
+#  - { role: java, java_version: 11 }
+  - java
+  - { role: tomcat, tomcat_version: 8.5.6 }
+#  - tomcat
+  - nginx
+    
+- name: Veryfication application stack
+  hosts: site
+  gather_facts: no
+  
+  roles:
+  - java_test
+  - tomcat_test
+  - nginx_test

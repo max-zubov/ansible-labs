@@ -1,0 +1,44 @@
+- name: Win Vagrant Provisioning
+  hosts: winvb
+
+  vars:
+   option: 'started'
+   winvagrantpath: 'D:\VAGRANT\CM\ANSIBLE\DAY-3\VAGRANT-VM3'
+   
+  tasks:
+  - debug:
+     msg: "Launched with option: {{option}}"
+
+  - name: On Windows Vagrant Provisioning
+    win_vagr:
+     path: '{{winvagrantpath}}'
+     vmname: 'vm3'
+     state: '{{option}}'
+    register: variables
+
+- name: Add host tomcat
+  hosts: localhost
+
+  tasks:
+  - debug:
+     msg: '{{hostvars.winvb.variables}}'
+
+  - add_host:
+     name: tomcat
+     ansible_host: '{{hostvars.winvb.variables.ipaddr}}'
+     ansible_user: '{{hostvars.winvb.variables.userlogin}}'
+     ansible_port: '22'
+     ansible_connection: 'ssh'
+     ansible_ssh_private_key_file: '{{hostvars.winvb.variables.keypath}}'
+    when:  hostvars['winvb']['variables']['state'] == "running"
+
+- name: Tomcat behind NGiNX Server Provision
+  hosts: tomcat
+  roles:
+  - java
+  - java_test
+  - tomcat
+  - tomcat_test
+  - nginx
+  - nginx_test     
+ 

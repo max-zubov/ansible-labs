@@ -1,0 +1,92 @@
+- name: Tomcat provision
+  hosts: tomcat
+  become: yes
+  become_user: root
+  
+  vars:
+    java_version: java-1.8.0-openjdk-devel
+    tomcat_version: "9.0.36"  
+    
+  tasks: 
+  - name: Java install
+    package: name={{java_version}} state=installed
+    
+  - name: Add group for tomcat
+    group:
+      name: tomcat_as_group
+      state: present
+      
+  - name: Add user for tomcat runing
+    user:
+      name: tomcat_as
+      group: tomcat_as_group
+      create_home: no
+      
+  - name: Tomcat get
+    get_url:
+      url: http://archive.apache.org/dist/tomcat/tomcat-9/v{{tomcat_version}}/bin/apache-tomcat-{{tomcat_version}}.tar.gz
+      dest: /opt
+      
+  - name: Create directory for tomcat
+    file:
+      path: /opt/tomcat
+      state: directory
+      mode: '0755'
+      
+  - name: Unpack
+    unarchive:
+      group: tomcat_as_group
+      owner: tomcat_as 
+      remote_src: yes 
+      src: /opt/apache-tomcat-{{tomcat_version}}.tar.gz
+      dest: /opt/tomcat
+      
+  - name: Create a Link
+    file: 
+      src: /opt/tomcat/apache-tomcat-{{ tomcat_version }}
+      path: /opt/tomcat/current
+      state: link
+        
+  - name: Install tomcat unit file     
+    copy:
+      src: /vagrant/cm/ansible/day-1/tomcat.service
+      dest: /usr/lib/systemd/system/
+      owner: root
+      group: root
+      mode: '0644'
+      
+  - name: Runing tomcat by systemd
+    service:
+      name: tomcat
+      enabled: yes
+      state: started
+      
+- name: Tomcat checked
+  hosts: tomcat
+
+  tasks:
+  - name: Check tomcat process present
+    shell: ps -eo cmd | grep -v grep | grep tomcat
+    args:
+      warn: false
+     
+  - name: Check tomcat port
+    shell: curl -s localhost:8080 | grep 'Apache Tomcat' >/dev/null
+    args:
+      warn: false
+      
+  - name: Retrieve tomcat uptime
+    shell:  ps -eo etime,args | grep -v grep | grep tomcat | awk '{print$1}'
+    register: elapsed_time    
+    
+  - debug: 
+      var: elapsed_time.stdout
+
+
+#  - name: Tomcat uptime (etimes)
+#    assert:
+#      success_msg: Tomcat don-t interrupt
+#      fail_msg: Tomcat started or interrupt
+#      that:
+#        - elapsed_time.stdout > 20
+       

@@ -1,0 +1,17 @@
+[Unit]
+Description=Apache Tomcat
+After=syslog.target network.target
+
+[Service]
+Type=forking
+Environment=JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk
+Environment=CATALINA_HOME=/opt/tomcat/current
+Environment=CATALINA_BASE=/opt/tomcat/current
+ExecStart=/opt/tomcat/current/bin/startup.sh
+ExecStop=/opt/tomcat/current/bin/shutdown.sh
+SuccessExitStatus=143
+User=tomcat_as
+Group=tomcat_as_group
+
+[Install]
+WantedBy=multi-user.target

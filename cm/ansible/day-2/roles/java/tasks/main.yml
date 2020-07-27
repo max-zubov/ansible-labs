@@ -1,0 +1,6 @@
+---
+# tasks file for java
+- name: Java installation
+  dnf: name=java-{{java_version}}-openjdk-devel
+  become: yes
+  
