@@ -1,0 +1,14 @@
+ansible ansible_host=192.168.33.11 ansible_connection=ssh ansible_port=22 ansible_user=vagrant
+
+[win]
+winvb ansible_host=192.168.33.1
+
+[win:vars]
+ansible_user=maks
+ansible_password=stalevar
+ansible_connection=winrm
+ansible_winrm_scheme=http
+ansible_port=5985
+#ansible_winrm_transport=basic
+ansible_winrm_server_cert_validation=ignore
+

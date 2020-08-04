@@ -1,0 +1,43 @@
+Vagrant.configure("2") do |config|
+  config.vm.box = "bento/centos-8.2"
+  config.vm.box_version = "202006.16.0"
+  config.vm.synced_folder "./", "/vagrant", owner: "vagrant", mount_options: ["dmode=775,fmode=600"]
+  
+  config.vm.define "vm1" do |vm1|
+    vm1.vm.network  "private_network", ip: "192.168.33.11"
+    vm1.vm.network  "forwarded_port", guest: 22, host: 22211 
+    vm1.vm.hostname = "ansible"
+    vm1.vm.provision "shell", inline: <<-SCRIPT
+      dnf -y update
+      dnf -y install python3
+      pip3 install ansible
+      pip3 install pywinrm
+      mkdir -p /vagrant/cm/ansible/day-4
+    SCRIPT
+    vm1.vm.provider "virtualbox" do |vb|
+      vb.name = "ansible-vm"
+      vb.memory = "1024"
+    end
+    
+  end
+    
+  config.vm.define "vm2" do |vm2|
+    vm2.vm.network  "private_network", ip: "192.168.33.12"
+    vm2.vm.network  "forwarded_port", guest: 22, host: 22212 
+    vm2.vm.network  "forwarded_port", guest: 8080, host: 12080 
+    vm2.vm.hostname = "tomcat"
+    vm2.vm.provider "virtualbox" do |vb|
+      vb.name = "tomcat-vm"
+      vb.memory = "2048"
+    end
+  end
+  
+end
+
+#      mkdir -p /vagrant/cm/ansible/day-3
+
+#    vm1.vm.provision "ansible" do |ansible|
+#      ansible.playbook = 'cm/ansible/day-3/stack.yml'
+#      ansible.limit = winvb
+#      ansible.verbose = 'vv'
+#    end    

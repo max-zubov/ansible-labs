@@ -1,0 +1,12 @@
+---
+# tasks file for deploy
+- deploy_war:
+    url: "{{deploy_url}}"
+    war: "{{deploy_war}}"
+    context: "{{deploy_context}}"
+    username: "{{deploy_username}}"
+    password: "{{deploy_password}}"
+  register: outdeploy
+      
+- debug:
+    var:  outdeploy.msg

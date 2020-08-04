@@ -1,0 +1,10 @@
+---
+# tasks file for deploy_test 
+- name: Check deployment status
+  uri:  
+    url: '{{deploy_url}}{{deploy_context}}'
+  register: status
+  failed_when: "'OK' not in status.msg"
+- debug:
+    msg: '{{status.msg}}'
+    

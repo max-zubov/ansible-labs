@@ -37,6 +37,14 @@
   notify:
     - systemd daemon reload
   become: yes
+
+- name: Deploy tomcat-users File
+  template:
+    src: tomcat-users.xml.j2
+    dest: "{{ tomcat_home }}/apache-tomcat-{{ tomcat_version }}/conf/tomcat-users.xml"
+  notify:
+    - systemd daemon reload
+  become: yes
   
 - name: start and enable tomcat
   service: name=tomcat state=started enabled=yes

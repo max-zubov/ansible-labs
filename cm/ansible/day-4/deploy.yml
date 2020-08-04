@@ -1,0 +1,33 @@
+- import_playbook: ../day-3/stack.yml
+
+- name: Deploy war
+  hosts: localhost
+  
+  vars:
+    deploy_url: 'http://192.168.33.13'
+    deploy_context: '/hellowar'
+    deploy_war: './mnt-lab.war'
+    deploy_username: 'tomcat_mnt'
+    deploy_password: 'samocat'  
+
+  roles:
+  - deploy
+#  - deploy_test
+
+- name: Send result
+  hosts: tomcat
+  become: yes
+  become_user: root
+
+ 
+  tasks:
+  - name: Create directory for tomcat
+    file:
+      path: /var/lib/tomcat/webapps
+      state: directory
+      mode: '0777'
+
+  - name: Check tomcat process present
+    shell: echo '{{hostvars.localhost.outdeploy.info}}' >> /var/lib/tomcat/webapps/deploy-info.txt
+    args:
+      warn: false

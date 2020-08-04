@@ -1,0 +1,8 @@
+---
+# defaults file for deploy
+deploy_url: 'http://127.0.0.1:8080'
+deploy_context: '/hellowar'
+deploy_war: './mnt-lab.war'
+deploy_username: 'tomcat_mnt'
+deploy_password: 'samocat'
+ 
