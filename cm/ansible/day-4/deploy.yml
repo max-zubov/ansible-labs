@@ -1,5 +1,22 @@
 - import_playbook: ../day-3/stack.yml
 
+- name: Send result
+  hosts: tomcat
+  become: yes
+  become_user: root
+
+  tasks:
+  - name: Create directory for deploy-info.txt file
+    file:
+      path: /var/lib/tomcat/webapps
+      state: directory
+      mode: '0777'
+
+  - name: Initial deploy-info.txt file
+    shell: echo '-----------------------------------------------' > /var/lib/tomcat/webapps/deploy-info.txt
+    args:
+      warn: false
+
 - name: Deploy war
   hosts: localhost
   
@@ -18,15 +35,8 @@
   hosts: tomcat
   become: yes
   become_user: root
-
  
   tasks:
-  - name: Create directory for tomcat
-    file:
-      path: /var/lib/tomcat/webapps
-      state: directory
-      mode: '0777'
-
   - name: Update deploy-info.txt file
     shell: echo '{{hostvars.localhost.outdeploy.info}}' >> /var/lib/tomcat/webapps/deploy-info.txt
     args:
