@@ -12,7 +12,7 @@
 
   roles:
   - deploy
-#  - deploy_test
+  - deploy_test
 
 - name: Send result
   hosts: tomcat
@@ -27,7 +27,7 @@
       state: directory
       mode: '0777'
 
-  - name: Check tomcat process present
+  - name: Update deploy-info.txt file
     shell: echo '{{hostvars.localhost.outdeploy.info}}' >> /var/lib/tomcat/webapps/deploy-info.txt
     args:
       warn: false
