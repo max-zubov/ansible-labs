@@ -1,0 +1,6 @@
+---
+# defaults file for tomcat
+tomcat_version: "9.0.36"
+tomcat_user: tomcat_as
+tomcat_group: tomcat_as_group
+tomcat_home: /opt/tomcat

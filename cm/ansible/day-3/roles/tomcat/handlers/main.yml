@@ -1,0 +1,44 @@
+---
+  # handlers file for tomcat
+- name: create tomcat config
+  copy: 
+    content: |
+      [Unit]
+      Description=Apache Tomcat
+      After=syslog.target network.target
+      
+      [Service]
+      Type=forking
+      Environment=JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk
+      Environment=CATALINA_HOME={{ tomcat_home }}/apache-tomcat-{{ tomcat_version }}
+      Environment=CATALINA_BASE={{ tomcat_home }}/apache-tomcat-{{ tomcat_version }}
+      ExecStart={{ tomcat_home }}/apache-tomcat-{{ tomcat_version }}/bin/startup.sh
+      ExecStop={{ tomcat_home }}/apache-tomcat-{{ tomcat_version }}/bin/shutdown.sh
+      SuccessExitStatus=143
+      User={{tomcat_user}}
+      Group={{tomcat_group}}
+      
+      [Install]
+      WantedBy=multi-user.target
+      
+    dest: /usr/lib/systemd/system/tomcat.service
+    
+  become: yes
+  
+- name: stop tomcat
+  systemd: state=stopped name=tomcat
+  become: yes
+
+- name: systemd daemon reload
+  systemd: daemon_reload=yes state=restarted name=tomcat
+#  systemd: daemon_reload=yes
+  become: yes
+
+- name: start tomcat
+  systemd: state=started name=tomcat
+  become: yes
+
+- name: restart tomcat
+  systemd: state=restarted name=tomcat
+  become: yes
+  

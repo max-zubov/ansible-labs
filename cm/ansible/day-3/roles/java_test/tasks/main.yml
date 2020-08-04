@@ -1,0 +1,13 @@
+---
+# tasks file for java_test
+- name: Java Version (java 8 allways)
+  shell: java -version 2>&1 | grep version | awk '{print $3}' | sed 's/[^0-9._]//g'
+  register: java_version_installed
+- debug: 
+    var: java_version_installed.stdout
+
+- name: Check Java version running for Tomcat
+  shell: ps -eo cmd | grep -v grep | grep "tomcat" | awk '{print $1}'
+  register: tomcat_java_version
+- debug: 
+    var: tomcat_java_version.stdout
